@@ -1,0 +1,50 @@
+.page {
+    background-color: rgb(35, 47, 62);
+}
+
+img.logo {
+    max-width: 20%;
+    height: auto;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.navbar {
+    background-color: rgb(57, 151, 206);
+}
+
+.network-info {
+    text-align: center;
+    padding-top: 5;
+    padding-bottom: 5;
+}
+
+span.bold {
+    font-weight: bold;
+}
+
+
+p {
+    font-family: American Typewriter, serif;
+    font-size: x-large;
+    font-weight: 600;
+    line-height: 2rem;
+    color: rgb(1, 10, 5);
+}
+
+.app-title {
+    text-align: center;
+    font-size: large;
+    color: rgb(1, 10, 5);
+    font-family: American Typewriter, serif;
+}
+
+.bg-image {
+    background-image: url("https://images.pexels.com/photos/7078692/pexels-photo-7078692.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh;
+}
