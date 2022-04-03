@@ -1,0 +1,59 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: IRSA Role for Kubernetes Pod - used as annoation in service account
+
+Parameters:
+  OidcProvider:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: EKS Cluster's OIDC provider
+  AppNamespace:
+    Type: String
+    Description: Kubernetes Application Namespace
+  ServiceAccountName:
+    Type: String
+    Description: Name of the Service Account used by Kubernetes app pod
+  EksAppRoleSsmParameterPath:
+    Type: String
+    Description: Store IRSA Role's ARN in SSM Parameter Store for reuse
+Resources:
+  EksAppRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: !Sub
+        - |
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Federated": "${IamOidcProviderArn}"
+                    },
+                    "Action": "sts:AssumeRoleWithWebIdentity",
+                    "Condition": {
+                        "StringEquals": {
+                            "${OidcProvider}:sub": "system:serviceaccount:${AppNamespace}:${ServiceAccountName}"
+                        }
+                    }
+                }
+            ]
+          }
+        -
+          IamOidcProviderArn: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/${OidcProvider}
+      Policies:
+        - PolicyName: eks-demo-app-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeNetworkInterfaces
+                Resource: "*"
+
+  EksAppRoleSsmParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Parameter to store ARN of IAM Role used by application pods to interact with AWS.
+      Name: !Ref EksAppRoleSsmParameterPath
+      Type: String
+      Value: !GetAtt EksAppRole.Arn

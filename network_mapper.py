@@ -3,9 +3,9 @@ Locate network services in an AWS environment and surface it to end users.
 """
 import boto3
 import logging
+import os
 
 from dataclasses import dataclass
-from ec2_metadata import ec2_metadata
 from os import environ
 
 logging.getLogger().setLevel(environ.get("LOG_LEVEL", "INFO"))
@@ -36,11 +36,11 @@ class NetworkMapper:
         :param pod_namespace: Namespace of the pod
         :param app_name: Name of the app
 
-        :return: Dictionary of network information
+        :return: Dictionary of discovered network information
         """
         network_info = {"optionals": {}}
         network_interface = self.describe_network_interfaces(
-            [{"Name": "addresses.private-ip-address", "Values": ["10.46.4.69"]}]
+            [{"Name": "addresses.private-ip-address", "Values": [client_ip_address]}]
         )
 
         logging.info(f"Found {len(network_interface)} network interfaces")
@@ -58,7 +58,8 @@ class NetworkMapper:
                 network_info["optionals"]["LOADBALANCER TYPE"] = "NetworkLoadBalancer"
 
             network_info["optionals"]["INTERFACE TYPE"] = network_interface[0]["InterfaceType"]
-            network_info["optionals"]["DESCRIPTION"] = network_interface[0]["Description"]
+            if "Description" in network_interface[0]:
+                network_info["optionals"]["INTERFACE DESCRIPTION"] = network_interface[0]["Description"]
 
         network_info["client_ip_address"] = client_ip_address
         network_info["pod_name"] = pod_name
@@ -66,10 +67,10 @@ class NetworkMapper:
         network_info["app_name"] = app_name
         network_info["requested_uri"] = request_url_path
 
-        try:
-            network_info["availability_zone"] = ec2_metadata.availability_zone
-            network_info["instance_id"] = ec2_metadata.instance_id
-        except:
-            logging.warning("Could not get EC2 metadata at this time")
+        # Get Instance ID and Availability Zone from EC2 Instance Metadata
+        network_info["availability_zone"] = os.popen(
+            f"curl -v http://169.254.169.254/latest/meta-data/placement/availability-zone"
+        ).read()
+        network_info["instance_id"] = os.popen(f"curl -v http://169.254.169.254/latest/meta-data/instance-id").read()
 
         return network_info

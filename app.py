@@ -1,5 +1,5 @@
 """
-Entrypoint for the application.
+Entrypoint for the eks application.
 """
 from os import environ
 
@@ -12,7 +12,7 @@ app = Flask(__name__)
 Bootstrap(app)
 
 
-@app.route("/")
+@app.route("/app")
 def eks_app():
     """
     Run Flask app
@@ -21,7 +21,10 @@ def eks_app():
     init_networkz = NetworkMapper()
 
     # Get caller's IP address
-    client_ip_address = request.remote_addr
+    client_ip_address = request.headers.get("X-Forwarded-For")
+    if not client_ip_address:
+        # This can be the load balancer's IP address
+        client_ip_address = request.remote_addr
     # Get caller requested URI
     request_url_path = request.path
 

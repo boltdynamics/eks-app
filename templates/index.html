@@ -26,8 +26,8 @@
             <div class="network-info">
                 <p>YOUR EKS APP IS RUNNING ON INSTANCE WITH ID {{ network_interface_info.instance_id }} IN
                     AVAILABILITY
-                    Zone {{ network_interface_info.availability_zone }}</p>
-                <p>APPLICATION POD WITH NAME {{ network_interface_info.pod_name }} IS RUNNING ON NAMESPACE {{
+                    ZONE {{ network_interface_info.availability_zone }}</p>
+                <p>APPLICATION POD WITH NAME {{ network_interface_info.pod_name }} IS RUNNING IN NAMESPACE {{
                     network_interface_info.pod_namespace }}</p>
                 <p>APP NAME: {{ network_interface_info.app_name }}</p>
                 <p>REQUESTED URI: {{ network_interface_info.requested_uri }}</p>

@@ -6,7 +6,13 @@ COPY requirements.txt requirements.txt
 
 RUN pip3 install -r requirements.txt
 
-COPY static templates network_mapper.py app.py .
+RUN apk add curl
+
+COPY static/ /app/static/
+
+COPY templates/ /app/templates/
+
+COPY network_mapper.py app.py .
 
 USER 1001
 
