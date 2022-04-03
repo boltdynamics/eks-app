@@ -99,7 +99,7 @@ We can use **CloudTrial** to search by **EventName** and see if our application 
 
 ![Screen Shot 2022-04-04 at 7.27.38 am.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1649021644625/UJwA_fsfg.png)
 
-### Github workflow build the docker image
+### Github workflow to build and push the docker image
 
 Everytime we merge a **Pull Request** to the **mainline** branch, we want to be able to automatically **build** the docker image and **push** it to Dockerhub. This follows the principle of **Continuous Integration(CI)** and **Continuous Delivery(CD)**.
 
