@@ -45,7 +45,10 @@ Docker image is built upon a base **python:alpine3.15** image to keep the image 
 
 Docker user is set to **1001** and it exposes port **5000**.
 
-Container security context: **runAsNonRoot** set to **true** to avoid giving containers access to host resources backed by **allowPrivilegeEscalation** set to **false** in the deployment spec hosted under `kubernetes/app.yaml`.
+### Image Security
+In the docker image, user is set to **1001** and the exposed port on the container is **5000**.
+
+**runAsNonRoot** set to **true** to avoid giving containers access to host resources backed by **allowPrivilegeEscalation** set to **false** in the deployment spec hosted under `kubernetes/app.yaml`. Similarly, `readOnlyRootFilesystem` is also set to `true`.
 
 ### Dockerhub to store the image
 
@@ -75,7 +78,7 @@ Running the docker app locally might not be the best option as the application c
 Run `make deploy-eks-app` to deploy,
 * A namespace for the application
 * A service account for the application
-    * The service account has the IAM role annotation set to the IRSA Role we create
+    * The service account has the IAM role annotation set to the IRSA Role we created earlier
 * A deployment of the application
 
 However, it is possible to run the app locally with `make run-eks-app` command.
@@ -87,3 +90,11 @@ To test if the application is working as expected in EKS environment, we can use
 Run `make port-forward-eks-app` to portforward eks app running on port **5000** to localhost port **80**.
 
 ![eks-app-port-forward](assets/eks-app.png)
+
+### CloudTrail to verify use of the IRSA Role
+
+**AWS CloudTrail** is an AWS service that tracks usage of the AWS services by users, an IAM role or other services to provide a holistic view of operations taking place in our AWS Accounts. This data helps in **governance, auditing and compliance** requirements. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.
+
+We can use **CloudTrial** to search by **EventName** and see if our application container has assumed the IRSA Role to make the `ec2:DescribeNetworkInterfaces` API call.
+
+![Screen Shot 2022-04-04 at 7.27.38 am.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1649021644625/UJwA_fsfg.png)
