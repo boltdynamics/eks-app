@@ -98,3 +98,17 @@ Run `make port-forward-eks-app` to portforward eks app running on port **5000** 
 We can use **CloudTrial** to search by **EventName** and see if our application container has assumed the IRSA Role to make the `ec2:DescribeNetworkInterfaces` API call.
 
 ![Screen Shot 2022-04-04 at 7.27.38 am.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1649021644625/UJwA_fsfg.png)
+
+### Github workflow build the docker image
+
+Everytime we merge a **Pull Request** to the **mainline** branch, we want to be able to automatically **build** the docker image and **push** it to Dockerhub. This follows the principle of **Continuous Integration(CI)** and **Continuous Delivery(CD)**.
+
+First, we need to create a **Personal Access Token(PAT)** for Dockerhub. Follow this [guide](https://docs.docker.com/docker-hub/access-tokens/) from DockerHub to create one for your account. Store the PAT and your username as GitHub secrets as shown below,
+
+![git-secrets](assets/git-secrets.png)
+
+You will notice that the secret names are referenced in the GitHub workflow file stored under path `.github/workflows/build-eks-app.yaml`.
+
+Everytime we merge a Pull Request to the mainline branch, a github workflow will start and it will build and push the docker image to Dockerhub.
+
+![git-workflow](assets/git-workflow.png)
